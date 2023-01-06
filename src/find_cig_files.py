@@ -126,24 +126,30 @@ def find_files_with_extension(
 
 def get_filenames(
     # input is a list of file paths
-    files: list
+    # and the extension of the files
+    files: list, extension: str = '.xlsb'
 
     # output is a list of the filenames
 ) -> list(str):
     """
     # Description:
-    Takes a list of file paths and returns a list of the filenames
+    Takes a list of file paths and the extension of the files
+    and returns a list of the filenames with the extension
 
     # Inputs:
     files: *list* a list of file paths
+    extension: *str* the extension of the files
+                default is '.xlsb'
 
     # Outputs:
-    filenames: *list* a list of the filenames
+    filenames: *list* a list of the filenames having the extension
+
 
     # Example:
-    files = ['C:/Users/username/Desktop/file1.txt', 'C:/Users/username/Desktop/file2.txt']
-    get_filenames(files)
-    > ['file1.txt', 'file2.txt']
+    files = ['O:/2019/2019 Q1/test 2019Q1.xlsb', 'O:/2019/2019 Q2/test 2Q2020.xlsb']
+    extension = '.xlsb'
+    get_filenames(files, extension)
+    ['test 2019Q1.xlsb', 'test 2Q2020.xlsb']
     """
     # get the base name of the file from the file path
     filenames = []
@@ -159,16 +165,16 @@ def get_filenames(
 
   
 def get_year_quarter(
-    # input is a list of file paths
-    file_paths: list
+    # input is a list of file paths and a file extension
+    file_paths: list, extension: str = '.xlsb'
 
     # output is a pandas dataframe with
-    # the file name, the year, and the quarter
-) -> pd.DataFrame(str, int, int):
+    # the file path, the file name, the year, and the quarter
+) -> pd.DataFrame(str, str, int, int):
     """
     # Description:
     Takes a list of file paths and returns
-    a pandas dataframe with the file name, the year, and the quarter
+    a pandas dataframe with the file path, the file name, the year, and the quarter
     by first extracting the file name from the file path using 
     the get_filenames function
     and then extracting the year and quarter from the filename
@@ -182,14 +188,15 @@ def get_year_quarter(
     file_paths: *list* a list of file paths
 
     # Outputs:
-    df: *pandas dataframe* a dataframe with the file name, the year, and the quarter
+    df: *pandas dataframe* a dataframe with the file path, file name, the year, and the quarter
 
     # Example:
-    file_paths = ['C:/Users/username/Desktop/file 2021Q1.txt', 'C:/Users/username/Desktop/file 2Q2023.txt']
-    get_year_quarter(file_paths)
-    > file_name  year  quarter
-    > 0  file 2021Q1.txt  2021        1
-    > 1  file 2Q2023.txt  2023        2
+    files = ['O:/2019/2019 Q1/test 2019Q1.xlsb', 'O:/2019/2019 Q2/test 2Q2020.xlsb', 'O:/2019/2019 Q2/test 4Q2023.xlsx']
+    extension = '.xlsb'
+    print(get_year_quarter(files, extension))
+                              file_path         file_name  year  quarter
+    0  O:/2019/2019 Q1/test 2019Q1.xlsb  test 2019Q1.xlsb  2019        1
+    1  O:/2019/2019 Q2/test 2Q2020.xlsb  test 2Q2020.xlsb  2020        2   
     """
     filenames = get_filenames(file_paths)
     df = pd.DataFrame(filenames, columns=['file_name'])
@@ -213,15 +220,6 @@ def get_year_quarter(
 
     # return the dataframe
     return df
-
-  # function that takes a data frame with the file name, the year, and the quarter
-  # creates an analysis index column that is 4 * year + quarter
-  # filters the data frame to only include the files with indices greater than
-  # or equal to the filter parameter that defaults to (4*2021 + 4) = 8084
-  # for files from 2021Q4 and later
-  # returns the filtered data frame
-  #
-
 
 def filter_year_quarter(
     # input is a data frame with
