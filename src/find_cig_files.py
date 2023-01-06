@@ -21,8 +21,7 @@ def find_files_with_extension_in_single_folder(
 ) -> list(str):
   """
   # Description:
-  Finds all the files in a directory
-  that have a certain extension
+  Finds all the files in a directory that have a certain extension
   and returns a list of the full file paths
 
   # Inputs:
@@ -33,19 +32,24 @@ def find_files_with_extension_in_single_folder(
 
   # Outputs:
   files: *list* a list of the filenames that have the extension
-
   """
-  # get a list of all the files in the directory
+  # Initialize an empty list to store the filenames
   files = []
 
-  # uses the os.scandir function to get a list of all the files in the directory
+  # Use os.scandir to iterate over the entries in the directory
   with os.scandir(directory) as entries:
-    # if the file is a file and has the extension
-    # then add the file to the list of files
+
+    # Iterate over the entries
     for entry in entries:
+      
+      # Check if the entry is a file and has the specified extension
       if entry.is_file() and entry.name.endswith(extension):
+        
+        # If it does, append the filename to the list
         files.append(entry.name)
-    return files
+
+  # Return the list of filenames
+  return files
 
 
 def find_files_with_extension(
