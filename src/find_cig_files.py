@@ -11,6 +11,7 @@ Module that finds all the CIG files starting in the root directory
 # and returns a dictionary with the filenames separated into the different categories
 
 import os
+import multiprocessing
 import pandas as pd
 
 def find_files_with_extension_in_single_folder(
@@ -78,20 +79,55 @@ def find_files_with_extension(
   # Initialize an empty list to store the file paths
   file_paths = []
 
-  # Use os.scandir to iterate over the entries in the root directory
-  with os.scandir(root_directory) as entries:
+  # Use a multiprocessing Pool to parallelize the search for files
+  with multiprocessing.Pool() as pool:
+      
+      # Use os.scandir to iterate over the entries in the root directory
+      with os.scandir(root_directory) as entries:
+  
+        # Iterate over the entries
+        for entry in entries:
+  
+          # If the entry is a file and has the specified extension, append the full file path to the list
+          if entry.is_file() and entry.name.endswith(extension):
+            file_paths.append(os.path.join(root_directory, entry.name))
+  
+          # If the entry is a directory, recursively search through the subdirectory
+          elif entry.is_dir():
+            file_paths.extend(
+              # Use pool.apply_async to run the function asynchronously to each subdirectory
+              pool.apply_async(
 
-    # Iterate over the entries
-    for entry in entries:
+                # The function to run is find_files_with_extension
+                find_files_with_extension
+                , args=(os.path.join(root_directory, entry.name), extension)
+                )
+                
+                # Use .get() to get the result of the asynchronous function
+                # and append it to the list of file paths
+                .get()
+                )
 
-      # If the entry is a file and has the specified extension, append the full file path to the list
-      if entry.is_file() and entry.name.endswith(extension):
-        file_paths.append(os.path.join(root_directory, entry.name))
+  # Return the list of file paths
+  return file_paths
 
-      # If the entry is a directory, recursively search through the subdirectory
-      elif entry.is_dir():
-        file_paths.extend(find_files_with_extension(
-          os.path.join(root_directory, entry.name), extension))
+  ##########################
+  ##### OLD CODE BELOW #####
+  ##########################
+  # # Use os.scandir to iterate over the entries in the root directory
+  # with os.scandir(root_directory) as entries:
+
+  #   # Iterate over the entries
+  #   for entry in entries:
+
+  #     # If the entry is a file and has the specified extension, append the full file path to the list
+  #     if entry.is_file() and entry.name.endswith(extension):
+  #       file_paths.append(os.path.join(root_directory, entry.name))
+
+  #     # If the entry is a directory, recursively search through the subdirectory
+  #     elif entry.is_dir():
+  #       file_paths.extend(find_files_with_extension(
+  #         os.path.join(root_directory, entry.name), extension))
 
   # Return the list of file paths
   return file_paths
