@@ -54,8 +54,8 @@ def find_files_with_extension_in_single_folder(
 
 
 def find_files_with_extension(
-  # input is a root directory and a file extension
-  root_directory: str = 'O:/STAFFHQ/SYMDATA/Actuarial/Reserving Applications/IBNR Allocation', extension: str = '.xlsb'
+  # input is a root directory and a file extension, and an indicator of whether to search asynchonously or not
+  root_directory: str = 'O:/STAFFHQ/SYMDATA/Actuarial/Reserving Applications/IBNR Allocation', extension: str = '.xlsb', asynchronous: bool = True
 
   # output is a list of the filenames that have the extension
 ) -> list(str):
@@ -71,6 +71,12 @@ def find_files_with_extension(
                   default is the directory where the files are stored
   extension: *str* the extension to search for
               default is '.xlsb'
+  asynchronous: *bool* whether to search asynchronously or not
+                default is True
+                If True, uses multiprocessing.Pool.apply_async to run
+                the function asynchronously to each subdirectory
+                If False, uses multiprocessing.Pool.map to run
+                the function synchronously to each subdirectory
 
   # Outputs:
   files: *list* a list of the filenames that have the extension
@@ -95,39 +101,27 @@ def find_files_with_extension(
           # If the entry is a directory, recursively search through the subdirectory
           elif entry.is_dir():
             file_paths.extend(
-              # Use pool.apply_async to run the function asynchronously to each subdirectory
-              pool.apply_async(
 
-                # The function to run is find_files_with_extension
-                find_files_with_extension
-                , args=(os.path.join(root_directory, entry.name), extension)
+              # If asynchronous is True, use pool.apply_async to run the function asynchronously to each subdirectory
+              if asynchronous:
+                # Use pool.apply_async to run the function asynchronously to each subdirectory
+                pool.apply_async(
+
+                  # The function to run is find_files_with_extension
+                  find_files_with_extension
+                  , args=(os.path.join(root_directory, entry.name), extension)
+                ).get()                
+              
+              # If asynchronous is False, run the function synchronously to each subdirectory
+              else:
+                # Use pool.map to run the function synchronously to each subdirectory
+                pool.map(
+
+                  # The function to run is find_files_with_extension
+                  find_files_with_extension
+                  , args=(os.path.join(root_directory, entry.name), extension)
                 )
-                
-                # Use .get() to get the result of the asynchronous function
-                # and append it to the list of file paths
-                .get()
-                )
-
-  # Return the list of file paths
-  return file_paths
-
-  ##########################
-  ##### OLD CODE BELOW #####
-  ##########################
-  # # Use os.scandir to iterate over the entries in the root directory
-  # with os.scandir(root_directory) as entries:
-
-  #   # Iterate over the entries
-  #   for entry in entries:
-
-  #     # If the entry is a file and has the specified extension, append the full file path to the list
-  #     if entry.is_file() and entry.name.endswith(extension):
-  #       file_paths.append(os.path.join(root_directory, entry.name))
-
-  #     # If the entry is a directory, recursively search through the subdirectory
-  #     elif entry.is_dir():
-  #       file_paths.extend(find_files_with_extension(
-  #         os.path.join(root_directory, entry.name), extension))
+            )
 
   # Return the list of file paths
   return file_paths
