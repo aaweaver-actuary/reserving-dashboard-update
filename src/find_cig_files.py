@@ -287,3 +287,65 @@ def filter_year_quarter(
   return df
 
 
+# get only link ratio filenames from the list of files
+# by comparing against an input dataframe of cig filetypes
+# called `cig_filetypes` that has the cig filetypes
+# that gets filtered to only include cig link ratio file names
+# also takes the filtered data frame from the `filter_year_quarter` function 
+# as input called `df` that gets filtered to only include cig link ratio file names
+# the file name is the `stem` from the `filename` column in
+# the `cig_filetypes` dataframe plus
+# an analysis identifier of the form
+# "XQYYYY" where X is the quarter and YYYY is the year 
+# and the file extension can be any excel file extension
+# the form of the filename is: "stem XQYYYY.xlsx"
+def get_cig_link_ratio_filenames(
+  # input is a data frame with
+  # the file path, the file name, the year, and the quarter
+  # and a `cig_filetypes` dataframe with columns
+  # `filename` and `type`
+  # type is the cig filetype that gets filtered to only include 
+  # 'link ratio' and filename is the file stem for the cig filetype
+  df: pd.DataFrame(str, str, int, int, int)
+  , cig_filetypes: pd.DataFrame(str, str)
+
+  # output is a data frame with
+  # the file path, the file name, the year, and the quarter
+  # filtered to only include cig link ratio file names
+) -> pd.DataFrame(str, str, int, int, int):
+  """
+  # Description:
+  Takes a data frame with the file path, the file name, the year, and the quarter
+  and a `cig_filetypes` dataframe with columns
+  `filename` and `type`
+  type is the cig filetype that gets filtered to only include 
+  'link ratio' and filename is the file stem for the cig filetype
+  and returns a data frame with the file path, the file name, the year, and the quarter
+  filtered to only include cig link ratio file names
+
+  # Inputs:
+  df: *pandas dataframe* a dataframe with the file path, file name, the year, and the quarter
+  cig_filetypes: *pandas dataframe* a dataframe with columns
+      `filename` and `type`
+      type is the cig filetype that gets filtered to only include 
+      'link ratio' and filename is the file stem for the cig filetype
+
+  # Outputs:
+  df: *pandas dataframe* a dataframe with the file path, file name, the year, and the quarter
+      filtered to only include cig link ratio file names
+
+  # Example:
+  files = ['O:/2019/2019 Q1/test 2019Q1.xlsb', 'O:/2019/2019 Q2/test 2Q2020.xlsb', 'O:/2019/2019 Q2/test 4Q2023.xlsb']
+  extension = '.xlsb'
+  cig_filetypes = pd.DataFrame({'filename': ['test'], 'type': ['link ratio']})
+  get_cig_link_ratio_filenames(filter_year_quarter(get_year_quarter(files, extension = extension)), cig_filetypes)
+                            file_path         file_name  year  quarter
+  0  O:/2019/2019 Q2/test 4Q2023.xlsb  test 4Q2023.xlsb  2023        4
+
+  - does not filter out files with indices less than the `analysis_idx_filter` parameter
+  - the first two files have indices less than the `analysis_idx_filter` parameter
+  - the third file has an index greater than or equal to the `analysis_idx_filter` parameter
+  - the third file is the only file that is returned
+  """
+  # filter the dataframe to only include cig link ratio file names
+  df = df[df['file_name'].str.contains('|'.join(c
