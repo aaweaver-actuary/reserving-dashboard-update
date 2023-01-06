@@ -36,16 +36,16 @@ def find_files_with_extension_in_single_folder(
 
   """
   # get a list of all the files in the directory
-  files = os.listdir(directory)
+  files = []
 
-  # filter the list of files to only include the files with the extension
-  files = [file for file in files if file.endswith(extension)]
-
-  # add the directory to the beginning of the file path
-  files = [directory + '/' + file for file in files]
-
-  # return the list of files
-  return files
+  # uses the os.scandir function to get a list of all the files in the directory
+  with os.scandir(directory) as entries:
+    # if the file is a file and has the extension
+    # then add the file to the list of files
+    for entry in entries:
+      if entry.is_file() and entry.name.endswith(extension):
+        files.append(entry.name)
+    return files
 
 
 def find_files_with_extension(
