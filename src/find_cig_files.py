@@ -93,7 +93,7 @@ def find_files_with_extension(
     concurrent.futures
       .ThreadPoolExecutor()
     os
-      .scandir()
+      .walk()
       .path.join()
     """
 
@@ -105,8 +105,8 @@ def find_files_with_extension(
       # Use a multiprocessing Pool to parallelize the search for files
       with multiprocessing.Pool() as pool:
 
-        # Use os.scandir to iterate over the entries in the root directory
-        with os.scandir(root_directory) as entries:
+        # Use os.walk to iterate over the entries in the root directory
+        with os.walk(root_directory) as entries:
 
           # Iterate over the entries
           for entry in entries:
