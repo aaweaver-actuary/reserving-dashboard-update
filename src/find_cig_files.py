@@ -347,5 +347,11 @@ def get_cig_link_ratio_filenames(
   - the third file has an index greater than or equal to the `analysis_idx_filter` parameter
   - the third file is the only file that is returned
   """
+  # filter cig_filetypes to only include 'link ratio' file types
+  cig_filetypes = cig_filetypes[cig_filetypes['type'] == 'link ratio']
+  
   # filter the dataframe to only include cig link ratio file names
-  df = df[df['file_name'].str.contains('|'.join(c
+  df = df[df['file_name'].str.contains('|'.join(cig_filetypes['filename']))]
+
+  # return the dataframe
+  return df
