@@ -60,10 +60,8 @@ def find_files_with_extension(
 ) -> list(str):
   """
   # Description:
-  Finds all the files in a directory
-  that have a certain extension
+  Finds all the files in a directory that have a certain extension
   starting in the root directory and going through all the subdirectories
-  using the find_files_with_extension_in_single_folder function
   and returns a list of the full file paths of the files that have the extension
   in the root directory and all the subdirectories
 
@@ -75,57 +73,28 @@ def find_files_with_extension(
 
   # Outputs:
   files: *list* a list of the filenames that have the extension
-
   """
-  # get a list of all the full file paths for all folders in the root directory
-  folders = [root_directory + '/' +
-      folder for folder in os.listdir(root_directory)]
 
-  # loop through each folder and keep adding subfolders to the list of folders until there are no more subfolders
-  while True:
+  # Initialize an empty list to store the file paths
+  file_paths = []
 
-        # get the number of folders before adding the subfolders
-        num_folders = len(folders)
+  # Use os.scandir to iterate over the entries in the root directory
+  with os.scandir(root_directory) as entries:
 
-        # loop through each folder
-        for folder in folders:
+    # Iterate over the entries
+    for entry in entries:
 
-            # if the folder is a directory
-            if os.path.isdir(folder):
+      # If the entry is a file and has the specified extension, append the full file path to the list
+      if entry.is_file() and entry.name.endswith(extension):
+        file_paths.append(os.path.join(root_directory, entry.name))
 
-                # get a list of all the subfolders in the folder
-                subfolders = [folder + '/' +
-                    subfolder for subfolder in os.listdir(folder)]
+      # If the entry is a directory, recursively search through the subdirectory
+      elif entry.is_dir():
+        file_paths.extend(find_files_with_extension(
+          os.path.join(root_directory, entry.name), extension))
 
-                # do not include any folders with the word "delete" in the name (not case sensitive)
-                subfolders = [
-                    subfolder for subfolder in subfolders if 'delete' not in subfolder.lower()]
-
-                # same thing with the word "archive" or "older"
-                subfolders = [
-                    subfolder for subfolder in subfolders if 'archive' not in subfolder.lower()]
-                subfolders = [
-                    subfolder for subfolder in subfolders if 'older' not in subfolder.lower()]
-
-                # append the subfolders to the list of folders
-                folders.extend(subfolders)
-
-        # get the number of folders after adding the subfolders
-        num_folders_after = len(folders)
-
-        # if the number of folders before adding the subfolders is the same as the number of folders after adding the subfolders
-        # then there are no more subfolders
-        if num_folders == num_folders_after:
-            break
-
-  # get a list of all the filepaths in each folder that have the extension
-  files = []
-  for folder in folders:
-      files.extend(
-          find_files_with_extension_in_single_folder(folder, extension))
-
-  # return the list of files
-  return files
+  # Return the list of file paths
+  return file_paths
 
 
 def get_filenames(
