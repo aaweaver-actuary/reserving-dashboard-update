@@ -115,7 +115,7 @@ def find_files_with_extension(
           if num_folders == num_folders_after:
               break
 
-    # get a list of all the files in each folder that have the extension
+    # get a list of all the filepaths in each folder that have the extension
     files = []
     for folder in folders:
         files.extend(find_files_with_extension_in_single_folder(folder, extension))
@@ -154,22 +154,10 @@ def get_filenames(
         # get the base name of the file from the file path
         filenames.append(os.path.basename(file))
 
-    #
+    # return the list of filenames
     return filenames
 
-  # function that takes a list of filen paths and returns
-  # a pandas dataframe with the file name, the year, and the quarter
-  # by first extracting the file name from the file path using
-  # the get_filenames function
-  # and then extracting the year and quarter from the filename
-  # by extracting the year and quarter from the filename
-  # year and quarter are in the format '2021Q2' or '3Q2023'
-  # year may come before or after the quarter in the filename
-  # year is 4 digits and quarter is 1 digit, separated by a Q
-  # year and quarter are split into two columns
-  #
-
-
+  
 def get_year_quarter(
     # input is a list of file paths
     file_paths: list
