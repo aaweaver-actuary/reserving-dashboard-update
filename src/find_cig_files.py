@@ -14,7 +14,7 @@ import os
 import pandas as pd
 
 
-def find_files_with_extension(
+def find_files_with_extension_in_single_folder(
     # input is a directory and a file extension
     directory: str = 'O:/STAFFHQ/SYMDATA/Actuarial/Reserving Applications/IBNR Allocation', extension: str = '.xlsb'
 
@@ -22,8 +22,9 @@ def find_files_with_extension(
 ) -> list(str):
     """
     # Description:
-    Finds all the files in a directory that have a certain extension
-    and returns a list of the filenames
+    Finds all the files in a directory
+    that have a certain extension
+    and returns a list of the full file paths
 
     # Inputs:
     directory: *str* the directory to search
@@ -36,14 +37,88 @@ def find_files_with_extension(
 
     """
     # get a list of all the files in the directory
+    files = os.listdir(directory)
+
+    # filter the list of files to only include the files with the extension
+    files = [file for file in files if file.endswith(extension)]
+
+    # add the directory to the beginning of the file path
+    files = [directory + '/' + file for file in files]
+
+    # return the list of files
+    return files
+
+# function that finds all the files in a directory that have a certain extension
+# starting in the root directory and going through all the subdirectories
+# using the find_files_with_extension_in_single_folder function
+# and returning a list of the full file paths of the files that have the extension
+# in the root directory and all the subdirectories
+
+def find_files_with_extension(
+    # input is a root directory and a file extension
+    root_directory: str = 'O:/STAFFHQ/SYMDATA/Actuarial/Reserving Applications/IBNR Allocation', extension: str = '.xlsb'
+
+    # output is a list of the filenames that have the extension
+) -> list(str):
+    """
+    # Description:
+    Finds all the files in a directory
+    that have a certain extension
+    starting in the root directory and going through all the subdirectories
+    using the find_files_with_extension_in_single_folder function
+    and returns a list of the full file paths of the files that have the extension
+    in the root directory and all the subdirectories
+
+    # Inputs:
+    root_directory: *str* the root directory to search
+                    default is the directory where the files are stored
+    extension: *str* the extension to search for
+                default is '.xlsb'
+
+    # Outputs:
+    files: *list* a list of the filenames that have the extension
+
+    """
+    # get a list of all the full file paths for all folders in the root directory
+    folders = [root_directory + '/' + folder for folder in os.listdir(root_directory)]
+
+    # loop through each folder and keep adding subfolders to the list of folders until there are no more subfolders
+    while True:
+        
+          # get the number of folders before adding the subfolders
+          num_folders = len(folders)
+  
+          # loop through each folder
+          for folder in folders:
+  
+              # if the folder is a directory
+              if os.path.isdir(folder):
+  
+                  # get a list of all the subfolders in the folder
+                  subfolders = [folder + '/' + subfolder for subfolder in os.listdir(folder)]
+
+                  # do not include any folders with the word "delete" in the name (not case sensitive)
+                  subfolders = [subfolder for subfolder in subfolders if 'delete' not in subfolder.lower()]
+
+                  # same thing with the word "archive" or "older"
+                  subfolders = [subfolder for subfolder in subfolders if 'archive' not in subfolder.lower()]
+                  subfolders = [subfolder for subfolder in subfolders if 'older' not in subfolder.lower()]
+  
+                  # append the subfolders to the list of folders
+                  folders.extend(subfolders)
+
+          # get the number of folders after adding the subfolders
+          num_folders_after = len(folders)
+
+          # if the number of folders before adding the subfolders is the same as the number of folders after adding the subfolders
+          # then there are no more subfolders
+          if num_folders == num_folders_after:
+              break
+
+    # get a list of all the files in each folder that have the extension
     files = []
-
-    # loop through the list of files
-    for file in os.listdir(directory):
-
-        # if the file has the extension, add it to the list
-        if file.endswith(extension):
-            files.append(file)
+    for folder in folders:
+        files.extend(find_files_with_extension_in_single_folder(folder, extension))
 
     # return the list of files
     return files
