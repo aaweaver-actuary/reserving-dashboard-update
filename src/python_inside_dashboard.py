@@ -1,70 +1,53 @@
-# Description: This script is used to connect to a SharePoint site and get the HTML content of the site.
-#              This script is used to show how to connect to a SharePoint site from inside the dashboard.
-#              Because the script is running inside the dashboard, it will use the Windows credentials.
-#              After getting the list of files in the SharePoint folder, gathers all "output_tbl" sheets from
-#              each excel file in the SP folder
-# Author: Andy Weaver
+"""
+Description:
+This script is used to connect to a SharePoint site and get
+the HTML content of the site. This script is used to show
+how to connect to a SharePoint site from
+inside the dashboard. Because the script is running
+inside the dashboard, it will use the Windows credentials.
+After getting the list of files in the SharePoint folder,
+gathers all "output_tbl" sheets from each excel file in
+the SP folder
+
+Author: Andy Weaver
+"""
+
 # pylint: disable=import-error
-
-# do not use Pylance on module imports in this file
-# command to disable Pylance reportMissingImports errors:
 # "python.analysis.disabled": ["reportMissingImports"]
-
-# do not do any linting on the imports section
-
-
-
+# pylint: disable=invalid-name
 # module imports:
 import office365
 from office365.runtime.auth.authentication_context import AuthenticationContext
 from office365.sharepoint.client_context import ClientContext
 
+# function to take a sharepoint connection and a string representing a folder,
+# and return the list of files in the folder
 
-# function to return the connection to the SharePoint site
-# uses the following method:
 
-# Site URL
-# `site_url` is a string input that defaults to  'https://cinfin.sharepoint.com/sites/PandCReserving'
-
-# User credentials
-# `user_email` is a string input that defaults to None
-# `password` is also a string input that defaults to None
-# if `user_email` and `password` are None, then the Windows credentials will be used
-
-# step 1: determine what credentials to use
-
-# step 2: Create an AuthenticationContext object
-# for example: auth_ctx = AuthenticationContext(site_url)
-
-# step 3: Authenticate using the user's email and password
-
-# for example:
-# if auth_ctx.acquire_token_for_user(user_email, password):
-#     # Create a ClientContext object using the authenticated context
-#     ctx = ClientContext(site_url, auth_ctx)
-#     print("Authenticated!")
-# else:
-#     print("Authentication failed.")
-
-# function to take a sharepoint connection and a string representing a folder, and return the list of files in the folder
 def get_sharepoint_connection(
-    site_url: str = 'https://cinfin.sharepoint.com/sites/PandCReserving', user_email: str = None, password: str = None
-) -> requests.models.Response:
+    site_url: str = 'https://cinfin.sharepoint.com/sites/PandCReserving',
+    user_email: str = None,
+    password: str = None
+) -> office365.sharepoint.client_context.ClientContext:
     """
-    # Description: This function takes a sharepoint site url, and returns the connection to the sharepoint site.
+    # Description:
+    This function takes a sharepoint site url,
+    and returns the connection to the sharepoint site.
 
-    # Parameters: site_url: str
-                         this is the url of the sharepoint site
-                         defaults to 'https://cinfin.sharepoint.com/sites/PandCReserving'
-                 user_email: str
-                         this is the email of the user
-                         defaults to None
-                 password: str
-                         this is the password of the user
-                         defaults to None
+    # Parameters:
+        site_url: str
+            this is the url of the sharepoint site
+            defaults to 'https://cinfin.sharepoint.com/sites/PandCReserving'
+        user_email: *str*
+            this is the email of the user
+            defaults to None
+        password: *str*
+            this is the password of the user
+            defaults to None
 
-    # Returns: requests.models.Response
-              this is the connection to the sharepoint site
+    # Returns:
+        requests.models.Response
+            this is the connection to the sharepoint site
     """
     # create an authentication context object
     # this is used to authenticate the user
@@ -85,10 +68,10 @@ def get_sharepoint_connection(
         # if only one of the two is None, then raise an error
         if user_email is None and password is not None:
             raise ValueError(
-                'user_email is None, but password is {}'.format(password))
+                f'user_email is None, but password is {password}')
         elif user_email is not None and password is None:
             raise ValueError(
-                'password is None, but user_email is {}'.format(user_email))
+                f'password is None, but user_email is {user_email}')
         else:
             pass
 
