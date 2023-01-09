@@ -1,0 +1,31 @@
+dependencies: [ ' @babel/preset-env ' , ' @babel/preset-react ' ] } ] } } Enter fullscreen mode Exit fullscreen mode
+
+Now, we can run the following command to compile our code: 
+  
+ npx babel src --out-dir lib Enter fullscreen mode Exit fullscreen mode
+
+This will create a lib directory with the compiled code. We can now run the following command to install our package locally:
+
+npm install --save-dev file:./ Enter fullscreen mode Exit fullscreen mode
+
+This will install our package locally. We can now run the following command to run our package:
+
+node lib/index.js Enter fullscreen mode Exit fullscreen mode
+
+This will run our package. We can now run the following command to publish our package:
+
+npm publish Enter fullscreen mode Exit fullscreen mode
+
+This will publish our package to npm. We can now run the following command to install our package globally:
+
+npm install -g reserving-dashboard-update Enter fullscreen mode Exit fullscreen mode
+
+This will install our package globally. We can now run the following command to run our package:
+
+reserving-dashboard-update Enter fullscreen mode Exit fullscreen mode
+
+This will run our package. We can now run the following command to uninstall our package globally:
+
+npm uninstall -g reserving-dashboard-update Enter fullscreen mode Exit fullscreen mode
+
+This will uninstall our package globally. We can now run the following command to uninstall our package locally:
