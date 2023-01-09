@@ -103,35 +103,28 @@ def get_sharepoint_connection(
 
 
 def get_files_in_folder(
-    client_context: office365.sharepoint.client_context.ClientContext, folder: str
+    client_context: office365.sharepoint.client_context.ClientContext,
+    folder: str
 ) -> list:
     """
-    # Description: This function takes a sharepoint connection and a string representing a folder,
-                   and returns the list of files in the folder.
+    # Description: 
+    This function takes a sharepoint connection and a string representing a folder,
+    and returns the list of files in the folder.
 
-    # Parameters: client_context: office365.sharepoint.client_context.ClientContext
-                                  this is the connection to the sharepoint site
-                          folder: str
-                                  this is the folder name
+    # Parameters: 
+        client_context: office365.sharepoint.client_context.ClientContext
+            this is the connection to the sharepoint site
+        folder: str
+            this is the folder name
 
-    # Returns: list
-              this is the list of files in the folder
+    # Returns: 
+        list
+            this is the list of files in the folder
     """
     # get the web object from the client context
     web = client_context.web
 
-    # get the list of files in the folder
-    # uses the `get_folder_by_server_relative_url` method of the `web` object
-    # that allows us to:
-    # 1. get the folder by the server relative url
-    # 2. get the files in the folder
-    #    this is done by using the `files` property of the folder object
-    # 3. load the files
-    #    this is done by using the `load` method of the client context object
-    # 4. execute the query
-
-    # 1. get the folder by the server relative url
-    # 2. get the files in the folder
+    # get the folder by the server relative url and then get the files in the folder
     files = client_context.web.get_folder_by_server_relative_url(folder).files
 
     # note that at this point, the `files` object is a `QueryServiceOperation` object,
