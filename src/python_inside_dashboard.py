@@ -16,6 +16,7 @@ Author: Andy Weaver
 # "python.analysis.disabled": ["reportMissingImports"]
 # pylint: disable=invalid-name
 # module imports:
+import itertools
 import office365
 from office365.runtime.auth.authentication_context import AuthenticationContext
 from office365.sharepoint.client_context import ClientContext
@@ -101,25 +102,28 @@ def get_sharepoint_connection(
     # return the ClientContext object
     return ctx
 
-
+# returns an iterable of files in the folder
 def get_files_in_folder(
+    # takes these inputs:
     client_context: office365.sharepoint.client_context.ClientContext,
     folder: str
+    
+    # returns an iterable:
 ) -> list:
     """
-    # Description: 
+    # Description:
     This function takes a sharepoint connection and a string representing a folder,
-    and returns the list of files in the folder.
+    and returns an iterable of files in the folder.
 
-    # Parameters: 
+    # Parameters:
         client_context: office365.sharepoint.client_context.ClientContext
             this is the connection to the sharepoint site
         folder: str
             this is the folder name
 
-    # Returns: 
+    # Returns:
         list
-            this is the list of files in the folder
+        
     """
     # get the web object from the client context
     web = client_context.web
@@ -141,6 +145,67 @@ def get_files_in_folder(
     client_context.execute_query()
 
     # now that we have executed the query, the `files` object is a list of files
-
     # return the list of files
     return files
+
+# function that takes the list of files and the sharepoint connection
+# and returns a list of dataframes from the "output_tbl" sheets in each excel file
+def get_dataframes_from_files(
+    files: list,
+    client_context: office365.sharepoint.client_context.ClientContext
+) -> list:
+    """
+    # Description: 
+    This function takes the list of files and the sharepoint connection
+    and returns a list of dataframes from the "output_tbl" sheets in each excel file.
+
+    # Parameters: 
+        files: list
+            this is the list of files in the folder
+        client_context: office365.sharepoint.client_context.ClientContext
+            this is the connection to the sharepoint site
+
+    # Returns: 
+        list
+            this is the list of dataframes from the "output_tbl" sheets in each excel file
+    """
+    # create an empty list to store the dataframes
+    dataframes = []
+    
+    # generate an iterator for the excel files in the folder
+    # with file extensions of ".xlsx", ".xlsb", and ".xlsm"
+    # using the `itertools` module
+    files_in_folder = itertools.chain(
+        files.get_by_file_extension('.xlsx'),
+        files.get_by_file_extension('.xlsb'),
+        files.get_by_file_extension('.xlsm')
+    )
+      
+    # iterate through the excel files
+    # reading the "output_tbl" sheet into a dataframe
+    # and appending the dataframe to the list of dataframes
+    for file in files_in_folder:
+        # get the file name
+        file_name = file.properties['Name']
+
+        # get the file url
+        
+        
+        # read the "output_tbl" sheet in the excel file
+        temp_df = pd.read_excel(
+            # the file url
+            file.properties['ServerRelativeUrl'],
+            
+            # the sheet name
+            sheet_name='output_tbl',
+            
+            # the engine to use to read the excel file
+            # if the file is an ".xlsb" file, then use the "pyxlsb" engine
+            # otherwise, use the "openpyxl" engine
+            engine='pyxlsb' if file.properties['Name'].endswith('.xlsb') else "openpyxl"
+        )
+        
+        # append the dataframe to the list of dataframes
+        dataframes.append(temp_df)
+        
+    
