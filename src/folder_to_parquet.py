@@ -268,8 +268,8 @@ def get_dataframes_from_sharepoint(
     # return the list of dataframes
     return dataframes
 
-  # function that converts a data frame to parquet and reuploads it to sharepoint
-  def dataframe_to_parquet_and_upload_to_sharepoint(
+# function that converts a data frame to parquet and reuploads it to sharepoint
+def dataframe_to_parquet_and_upload_to_sharepoint(
     # the dataframe to convert to parquet
     df: pd.DataFrame,
 
@@ -371,7 +371,7 @@ def get_client_context_and_sharepoint_folder(
 
     # the sharepoint folder
     sharepoint_folder_path: str = "Shared Documents/Dashboard Development/"
-  ) -> None:
+) -> None:
     """
     # Description:
     This function puts it all together.
@@ -437,4 +437,3 @@ def get_client_context_and_sharepoint_folder(
     
     # return None
     return None
-  

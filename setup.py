@@ -47,7 +47,8 @@ install_requires = [
     "pandas",
     "numpy",
     "openpyxl",
-    "pyodbc"
+    "pyxlsb",
+    "office365"
 ]
 
 # entry points of the package
