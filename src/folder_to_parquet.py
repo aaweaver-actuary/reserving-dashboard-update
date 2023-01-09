@@ -356,7 +356,7 @@ def get_client_context_and_sharepoint_folder(
   
   # function that puts it all together
   # read the data, append it, and upload it to sharepoint
-  def main(
+  def folder_to_parquet(
     # sharepoint folder 
     sharepoint_folder: str = "CIG Link Ratio Files"
     
@@ -438,4 +438,3 @@ def get_client_context_and_sharepoint_folder(
     # return None
     return None
   
-main()
