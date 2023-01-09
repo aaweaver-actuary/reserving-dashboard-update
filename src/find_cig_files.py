@@ -56,124 +56,50 @@ def find_files_with_extension_in_single_folder(
 
 
 def find_files_with_extension(
-    root_directory: str = 'O:/STAFFHQ/SYMDATA/Actuarial/Reserving Applications/IBNR Allocation',
-    extension: str = '.xlsb', use_asynchronous: bool = True, use_multiprocessing: bool = True
+  root_directory: str = 'O:/STAFFHQ/SYMDATA/Actuarial/Reserving Applications/IBNR Allocation',
+  extension: str = '.xlsb', use_asynchronous: bool = True, use_multiprocessing: bool = True
 ) -> list(str):
-    """
-    # Description:
-    Finds all the files in a directory that have a certain extension
-    starting in the root directory and going through all the subdirectories
-    and returns a list of the full file paths of the files that have the extension
-    in the root directory and all the subdirectories
+  """
+  # Description:
+  Finds all the files in a directory
+  that have a certain extension
+  Finds all the files in a directory that have a certain extension
+  starting in the root directory and going through all the subdirectories
+  using the find_files_with_extension_in_single_folder function
+  and returns a list of the full file paths of the files that have the extension
+  in the root directory and all the subdirectories
+  
+  # Inputs:
+  root_directory: *str* the root directory to search
+                  default is the directory where the files are stored
+                  
+  
+  # Outputs:
+  files: *list* a list of the filenames that have the extension
+  """
+  # get a list of all the full file paths for all folders in the root directory
+  folders = [root_directory + '/' +
+      folder for folder in os.listdir(root_directory)]
 
-    # Inputs:
-    root_directory: *str* the root directory to search
-                    default is the directory where the files are stored
-    extension: *str* the extension to search for
-                default is '.xlsb'
-    use_asynchronous: *bool* whether to search asynchronously or not
-                  default is True
-                  If True, uses multiprocessing.Pool.apply_async to run
-                  the function asynchronously to each subdirectory
-                  If False, uses multiprocessing.Pool.map to run
-                  the function synchronously to each subdirectory
-    use_multiprocessing: *bool* whether to use multiprocessing or threading
-                      default is True
-                      If True, uses multiprocessing.Pool
-                      to parallelize the search for files
-                      If False, uses concurrent.futures.ThreadPoolExecutor
-                      to parallelize the search for files
+  # loop through each folder and keep adding subfolders to the list of folders until there are no more subfolders
+  while True:
+      
+    # initialize a list to store the subfolders
+    subfolders = []
 
-    # Outputs:
-    files: *list* a list of the filenames that have the extension
+    # loop through each folder
+    for folder in folders:
 
-    # Imports:
-    multiprocessing
-      .Pool()
-    concurrent.futures
-      .ThreadPoolExecutor()
-    os
-      .walk()
-      .path.join()
-    """
-
-    # Initialize an empty list to store the file paths
-    file_paths = []
-
-    # If use_multiprocessing is True, use multiprocessing to parallelize the search for files
-    if use_multiprocessing:
-      # Use a multiprocessing Pool to parallelize the search for files
-      with multiprocessing.Pool() as pool:
-
-        # Use os.walk to iterate over the entries in the root directory
-        with os.walk(root_directory) as entries:
-
-          # Iterate over the entries
-          for entry in entries:
-
-            # If the entry is a file and has the specified extension, append the full file path to the list
-            if entry.is_file() and entry.name.endswith(extension):
-              file_paths.append(os.path.join(
-                  root_directory, entry.name))
-
-            # If the entry is a directory, recursively search through the subdirectory
-            elif entry.is_dir():
-              file_paths.extend(
-
-                # If use_asynchronous is True, use pool.apply_async to run the function asynchronously to each subdirectory
-                if use_asynchronous:
-                # Use pool.apply_async to run the function asynchronously to each subdirectory
-                pool.apply_async(
-
-                  # The function to run is find_files_with_extension
-                  find_files_with_extension
-                  , args=(os.path.join(root_directory, entry.name)
-                        , extension
-                        , use_asynchronous)
-                ).get()
-
-                # If use_asynchronous is False, run the function synchronously to each subdirectory
-                else:
-                # Use pool.map to run the function synchronously to each subdirectory
-                pool.map(
-
-                  # The function to run is find_files_with_extension
-                  find_files_with_extension
-                  , args=(os.path.join(root_directory, entry.name), extension)
-                )
-              )
-
-    # If use_multiprocessing is False, use threading to parallelize the search for files
-    else:
-      # Create a ThreadPoolExecutor with the desired number of threads
-      with concurrent.futures.ThreadPoolExecutor() as executor:
-
-        # Use os.scandir to iterate over the entries in the root directory
-        with os.scandir(root_directory) as entries:
-
-          # Iterate over the entries
-          for entry in entries:
-
-            # If the entry is a file and has the specified extension, append the full file path to the list
-            if entry.is_file() and entry.name.endswith(extension):
-              file_paths.append(os.path.join(
-                root_directory, entry.name))
-
-            # If the entry is a directory, recursively search through the subdirectory
-            elif entry.is_dir():
-              # Submit the function to be run asynchronously to the thread pool
-              future = executor.submit(find_files_with_extension, os.path.join(
-                root_directory, entry.name), extension)
-              # Add the future to a list of futures
-              futures.append(future)
-
-          # Iterate over the completed tasks and get the results
-          for future in concurrent.futures.as_completed(futures):
-            # Append the result of the completed task to the list of file paths
-            file_paths.extend(future.result())
-
-    # Return the list of file paths
-    return file_paths
+      # get a list of all the subfolders in the folder
+      subfolders += [folder + '/' + subfolder for subfolder in os.listdir(folder)]
+      
+      # if there are no subfolders, break out of the loop
+      if len(subfolders) == 0:
+        break
+      
+      
+            
+            
 
 
 def get_filenames(
